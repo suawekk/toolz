@@ -1,5 +1,5 @@
-#!/bin/bash
 ################################################################################
+#!/bin/bash
 # Cookie check for KK
 # author: suawekk <suawekk@gmail.com>
 # date: 01-03-2013 
@@ -59,7 +59,7 @@ else
         exit 0
     fi
 
-    GREPPED=$($CMD | $GREP -P Set-Cookie:\s+$COOKIE_NAME)
+    GREPPED=$($CMD 2>/dev/null| $GREP -P Set-Cookie:\s+$COOKIE_NAME)
     if [[ -z $GREPPED ]]
     then
         echo "Check OK!"
