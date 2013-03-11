@@ -1,0 +1,51 @@
+#!/bin/zsh -x
+BACKUP_DIR=/sdcard/Backup
+SOURCE_FILES=()
+SCRIPT_NAME=${0##.*/}
+
+ADB=$(whence adb)
+
+function usage(){
+    <<EOT >&2
+Usage:
+    $SCRIPT_NAME [ -r read_from -t dest_dir -d device-id -h]
+        -r : path to file containing files to backup
+        -t : destination directory
+        -d : android device 
+        -h : help,usage
+EOT
+}
+
+function error() {
+    echo "$1" >&2
+    exit ${2:-1}
+}
+
+
+if [[ -x $ADB ]]
+then
+    error "No adb found in \$PATH please install it before using this script"
+fi
+
+
+while getopts ':r:t:d:h' opt
+do
+    case $opt in
+        d)
+        ;;
+        r)
+        ;;
+        t)
+        ;;
+        h)
+            usage
+            exit 0
+        ;;
+        \?)
+            error "Unknown parameter : $OPTARG" 1
+        ;;
+        :)
+            error "Parameter: -$OPTARG requires an argument" 2
+        ;;
+    esac
+done
