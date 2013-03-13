@@ -1,4 +1,5 @@
 #!/bin/zsh -x
+# vim: ft=sh
 BACKUP_DIR=/sdcard/Backup
 SOURCE_FILES=()
 SCRIPT_NAME=${0##.*/}

@@ -1,0 +1,4 @@
+
+#!/bin/zsh
+SHORT_HOSTNAME=$(hostname -s)
+parallel ssh {} 'sudo aptitude dist-upgrade -y' < =(lxc-ls | sed -e "s/\$/.$SHORT_HOSTNAME/")

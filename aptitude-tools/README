@@ -1,0 +1,4 @@
+Script descriptions:
+
+up{grade,date}_lxc_apt : wrappers for parallel to simplify  simultaneous 
+updates on multiple LXC virtual machines

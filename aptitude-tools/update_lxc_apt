@@ -1,0 +1,3 @@
+#!/bin/zsh
+SHORT_HOSTNAME=$(hostname -s)
+parallel ssh {} 'sudo aptitude update' < =(lxc-ls | sed -e "s/\$/.$SHORT_HOSTNAME")
