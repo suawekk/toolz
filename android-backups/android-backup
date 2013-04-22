@@ -33,6 +33,7 @@ while getopts ':r:t:d:h' opt
 do
     case $opt in
         d)
+            DEVICE_ID="$OPTARG"
         ;;
         r)
         ;;
