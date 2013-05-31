@@ -1,0 +1,5 @@
+source 'http://rubygems.org'
+
+gem 'chronic'
+gem 'chronic_duration'
+gem 'heredoc_unindent'
