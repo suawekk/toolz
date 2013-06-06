@@ -1,0 +1,5 @@
+source 'http://rubygems.org'
+
+gem 'heredoc_unindent'
+gem 'colorize'
+gem 'socksify'

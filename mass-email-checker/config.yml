@@ -1,0 +1,7 @@
+config:
+    proxy:
+        enable: true
+        host: localhost
+        port: 9050
+    mail:
+        read_email_store: 'read_emails_{USER}_{DOMAIN}'
