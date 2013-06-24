@@ -1,7 +1,9 @@
-config:
-    proxy:
-        enable: true
-        host: localhost
-        port: 9050
-    mail:
-        read_email_store: 'read_emails_{USER}_{DOMAIN}'
+proxy:
+    enable: false
+    server: localhost
+    port: 9050
+
+
+general:
+    cacert_bundle: curl_cacerts.pem
+    ssl_verify: true
