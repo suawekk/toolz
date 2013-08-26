@@ -84,7 +84,7 @@ fi
 
 if [[ ! -f "$RNDCKEY" ]]
 then
-    echo "File: 'RNDCKEY' does not exist or is not readable!"
+    echo "File: '$RNDCKEY' does not exist or is not readable!"
     exit 1
 fi
 
@@ -92,9 +92,22 @@ fi
 
 if [[ -z "$MASS_UPDATE_FILE" ]]
 then
+	if [[ -z "$RECORD" ]]
+	then
+		echo "Pass record name (-r)!"
+		exit 1
+	fi
+
 	echo "Updating DNS record: $RECORD to point to $ADDR, server is: $HOST"
 	UPDATE_STR="update delete ${RECORD}.|update add ${RECORD}. $TTL $TYPE $ADDR|"
 else 
+
+	[[ if ! -f "$MASS_UPDATE_FILE" ]]
+	then
+		echo "Mass update file: '$MASS_UPDATE_FILE' does not exist!"
+		exit 1	
+	fi
+
 	echo "Procesing updates from file: $MASS_UPDATE_FILE"
 	UPDATE_SPEC="$(cat $MASS_UPDATE_FILE)"
 
