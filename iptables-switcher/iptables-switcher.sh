@@ -1,6 +1,6 @@
 #!/bin/bash
-IPTABLES=$(which iptables) 
-SUDO=$(which sudo)
+IPTABLES=/sbin/iptables
+SUDO=/usr/bin/sudo
 SSH=$(which ssh)
 SED=$(which sed)
 AWK=$(which awk)
@@ -42,7 +42,7 @@ help(){
 
 error(){
     ERROR=1
-    echo -e "[1;31m$1[1;0m" >&2
+    echo -e "$1" >&2
 }
 
 while getopts :c:C:t:j:r:hns  OPT
@@ -128,12 +128,12 @@ else
     echo "Found rule with comment: '$COMMENT' at index $RULE_INDEX (chain: $CHAIN, table: $TABLE)"
 fi
 
-RULE=$($IPT_CMD -t $TABLE -S $CHAIN | $AWK "/--comment\s+$COMMENT\s+/ {print ; exit}")
+RULE=$($IPT_CMD -t $TABLE -S $CHAIN $RULE_INDEX)
 RULE_NOPREFIX=$(echo "$RULE" | $SED -e "s/^-A $CHAIN //")
 RULE_BARE=$(echo "$RULE_NOPREFIX" | $SED -e 's/-j.*$//')
 
 TARGET_RULE="$RULE_BARE -j $TARGET_SPEC"
-echo -e "Replacing rule:\n[1;31m$RULE_NOPREFIX[1;0m\nwith:\n[1;32m$TARGET_RULE[1;0m"
+echo -e "Replacing rule:\n$RULE_NOPREFIX\nwith:\n$TARGET_RULE"
 
 REPLACE_CMD="$IPT_CMD -t $TABLE -R $CHAIN $RULE_INDEX $TARGET_RULE"
 
@@ -147,7 +147,9 @@ eval $REPLACE_CMD
 
 LIST_CMD="$IPT_CMD $DNS_SPEC --line-numbers -t $TABLE -vL  $CHAIN"
 echo "Target chain now looks like this:"
-echo -ne "$SEP\n\[1;34m$($LIST_CMD)[1;0m\n$SEP\n"
+
+LIST="`$LIST_CMD`"
+echo -ne "$SEP\n$LIST\n$SEP\n"
 
 
 if [[ $? -ne 0  ]]
