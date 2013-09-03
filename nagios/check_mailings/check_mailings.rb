@@ -65,7 +65,7 @@ end
 if (threshold_passed)
 	prefix="CHECK_MAILING WARNING(late delivery)"
 else
-	details ="CHECK_MAILING OK"
+	prefix ="CHECK_MAILING OK"
 end
 
 details ="#{prefix}: Received mail from #{mail.from.pop}, at: #{mail.date}, subject: #{mail.subject},id: #{mail.message_id}, delayed by #{delay} seconds"

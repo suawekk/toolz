@@ -3,8 +3,8 @@
 require 'json'
 require 'optparse'
 require 'etc'
-
 module StatChecker
+
 
     EXIT_OK       = 0
     EXIT_WARNING  = 1
@@ -55,7 +55,10 @@ module StatChecker
 
             results = []
 
-            files.each {|f| results << process_file(f,config)}
+            files.each do |f| 
+                data =  process_file(f,config)
+                results << data if data
+            end
 
             results
         end
@@ -69,42 +72,57 @@ module StatChecker
                 result[:failures] << "stat"
             end
 
-            begin
-                user_data  = Etc::getpwnam(config['user'])
-            rescue 
-                user_data = nil
-            end
 
-            unless user_data && (user_data.uid == stat.uid)
-                result[:failed_attrs] << "user != '#{config['user']}'"
-            end
-
-            begin
-                group_data = Etc::getgrnam(config['group'])
-            rescue 
-                group_data=nil
-            end
-
-            unless group_data && (group_data.gid == stat.gid)
-                result[:failed_attrs] << "group != #{config['group']}"
-            end
-
-            if config['type'] == FTYPE_DIR
-                if !stat.directory? 
-                    result[:failed_attrs] << "type != dir"
+            unless config['user'].nil?
+                begin
+                    user_data  = Etc::getpwnam(config['user'])
+                rescue 
+                    user_data = nil
                 end
-            elsif config['type'] == FTYPE_FILE 
-                if !stat.file?
-                    result[:failed_attrs] << "type != file"
+
+                unless user_data && (user_data.uid == stat.uid)
+                    result[:failed_attrs] << "user != '#{config['user']}'"
                 end
             end
 
-            actual_perms =  sprintf("%o",stat.mode)
-            if  actual_perms != config['perm']
-                    result[:failed_attrs] << "mode != #{config['perm']}"
+
+            unless config['group'].nil?
+                begin
+                    group_data = Etc::getgrnam(config['group'])
+                rescue 
+                    group_data=nil
+                end
+
+                unless group_data && (group_data.gid == stat.gid)
+                    result[:failed_attrs] << "group != #{config['group']}"
+                end
             end
 
-            result
+            unless config['type'].nil?
+                if config['type'] == FTYPE_DIR
+                    if !stat.directory? 
+                        result[:failed_attrs] << "type != dir"
+                    end
+                elsif config['type'] == FTYPE_FILE 
+                    if !stat.file?
+                        result[:failed_attrs] << "type != file"
+                    end
+                end
+            end
+
+            unless config['perm'].nil?
+                actual_perms =  sprintf("%o",stat.mode).gsub(/\d+(\d{3})/,'\1')
+
+                if  actual_perms  =~ Regexp.new(config['perm'])
+                    result[:failed_attrs] << "mode !~ #{config['perm']}"
+                end
+            end
+
+            if result[:failed_attrs].empty?
+                return nil
+            end
+
+            return result
         end
 
         def run!
@@ -128,6 +146,7 @@ module StatChecker
                 exit EXIT_OK
             end
 
+
             output = "CRITICAL: following files have invalid metadata:\n"
             failed.each do |f|
                 output += ("%s: %s\n" % [f[:name],f[:failed_attrs].join(", ")])
@@ -140,4 +159,3 @@ module StatChecker
     end
     StatChecker.new.run!
 end
-

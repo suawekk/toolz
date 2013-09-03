@@ -1,8 +1,8 @@
 {
   "/tmp": {
-    "type": "file",
     "perm": "775",
-    "user": "suawek",
-    "group": "suawek"
+    "user": "root"
   }
 }
+
+
