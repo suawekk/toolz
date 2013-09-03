@@ -1,0 +1,9 @@
+checks:
+        mailing_pl:
+                from_pattern:           "noreply.*@mail.kodyrabatowe.pl"
+                svc_name:               "Mailing received - pol"
+                late_delivery_secs:     "86400"
+                log_file:               "logs/pol.log"
+submission:
+        nagios_socket:                  "/var/lib/nagios3/rw/nagios.cmd"
+        hostname:                       "nagios.dev.k-dn.net"
