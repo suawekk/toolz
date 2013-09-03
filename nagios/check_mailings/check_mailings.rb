@@ -83,7 +83,7 @@ end
 
 
 unless matching['log_file'].nil?
-	File.open(matching['log_file'],"a") do |log|
+	File.open(matching['log_file'],"a+") do |log|
 		log.puts("%s: from %s,subj: %s,id:  %s, state: %i\n" % [Time.now.to_s,mail.from.pop,mail.subject,mail.message_id,code])
 	end
 end
