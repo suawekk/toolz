@@ -1,6 +1,5 @@
-### This script processes incoming messages and submits passive checks locally via nagios rw socket
-### To use it you need to pipe incoming messages to STDIN 
-
+#### This script processes incoming messages and submits passive checks locally via nagios rw socket
+#### To use it you need to pipe incoming messages to STDIN 
 
 #### Setup
 In postfix you can put something like this in respective users' home directory:
