@@ -1,9 +1,26 @@
-checks:
-        mailing_pl:
-                from_pattern:           "noreply.*@mail.kodyrabatowe.pl"
-                svc_name:               "Mailing received - pol"
-                late_delivery_secs:     "86400"
-                log_file:               "logs/pol.log"
+global:
+        check_spf:              true
+        check_dkim:             true
+        check_spam:             true
+        spf_header:             "Received-SPF"
+        spf_valid_regex:        "^pass"
+        dkim_header:            "Authentication-Results"
+        dkim_signature_header:  "DKIM-Signature"
+        dkim_valid_regex:       "dkim=pass"    
+        spam_header:            "X-Spam-Status"
+        nospam_regex:           "^No"    
+        late_delivery_secs:     "86400"
+
 submission:
         nagios_socket:                  "/var/lib/nagios3/rw/nagios.cmd"
-        hostname:                       "nagios.dev.k-dn.net"
+        hostname:                       "my.nagios.hostname.com"
+
+checks:
+        mailing_1:
+                from_pattern:           "noreply.*@mail.domain1"
+                svc_name:               "Mailing received - domain1"
+                log_file:               "/var/lib/nagios/check_mailings/logs/dom1.log"
+        mailing_2:
+                from_pattern:           "noreply.*@mail.domain2"
+                svc_name:               "Mailing received - domain2"
+                log_file:               "/var/lib/nagios/check_mailings/logs/dom2.log"
