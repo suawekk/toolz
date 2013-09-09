@@ -1,0 +1,9 @@
+proxy:
+    enable: false
+    server: localhost
+    port: 9050
+
+
+general:
+    cacert_bundle: curl_cacerts.pem
+    ssl_verify: true

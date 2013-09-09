@@ -1,8 +1,8 @@
 #!/usr/bin/env ruby
 # Pingdom REST API paused/failed check tester 
 # Author: suawekk <suawekk+nagioschecks@gmail.com>
-# Ver: 0.1
-# Date: 2013-04-26
+# Ver: 0.2
+# Date: 2013-05-28
 
 begin
     require 'curb'
@@ -10,6 +10,7 @@ begin
     require 'json'
     require 'heredoc_unindent'
     require 'nagios_check'
+    require 'yaml'
 rescue LoadError => e
     puts "Exception was raised when loading required gems: #{e.message}"
 end
@@ -17,7 +18,7 @@ end
 class PingdomCheck
     include NagiosCheck
 
-    VERSION = '0.1'
+    VERSION = '0.2'
     API_PROTO = 'https'
     API_BASE = 'api.pingdom.com/api'
 
@@ -29,9 +30,7 @@ class PingdomCheck
     STATUS_UP = 'up'
     STATUS_DOWN = 'down'
 
-    on '--user USER', '-u USER',String, :mandatory
-    on '--pass PASSWORD', '-p PASSWORD',String, :mandatory
-    on '--apikey APIKEY', '-a APIKEY',String, :mandatory
+    on '--cfg CONFIGFILE', '-C CONFIGFILE',String, :mandatory
     on '--mode MODE', '-m MODE',String, [:failed,:paused],:mandatory
     on '--help', '-h',String do 
         help
@@ -52,12 +51,15 @@ class PingdomCheck
             opts are:
                 -m , --mode failed|paused 
                     determine which checks should be counted
-                -u, --user USER 
-                    Pingdom account username
-                -p, --pass PASS
-                    Pingdom account PASSWORD
-                -a, --apikey APIKEY
-                    Pingdom REST API key
+                -c, --configfile CONFIGFILE
+                    Configuration file (with username and password in YAML format)
+                    example :
+                        --begin file --
+                        user: test
+                        pass: p4ssw0rd!
+                        apikey: 0c22cdvcx446dfg57
+                        --end file --
+                    
                 -h, --help
                     Shows this message...
                 -w x|x,y
@@ -66,10 +68,38 @@ class PingdomCheck
                     Critical range
                 -t TIMEOUT_SECS
                     Optional timeout in seconds
+                -g, --gzip
+                    Allow gzip compression in responses
         EOD
     end
 
+    def read_config
+        false  unless File.exists?(@options['cfg'])
+
+        begin
+            data = YAML::load_stream(File.open(@options['cfg']))
+        rescue  => e 
+            STDERR.puts "Exception during loading configuration file (mandatory) : #{e.message}"
+            data = nil
+        end
+
+        false unless data
+
+        if data.kind_of? Array
+            data = data.pop
+        end
+
+        false if (data['user'].nil? || data['pass'].nil? || data['apikey'].nil?)
+
+        @options['user'] = data['user'];
+        @options['pass'] = data['pass'];
+        @options['apikey'] = data['apikey'];
+
+    end
+
     def check
+        read_config
+
         url= "#{API_PROTO}://#{API_BASE}/#{API_VER}/checks"
 
         curb = Curl::Easy.perform(url) do |c| 
