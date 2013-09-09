@@ -46,7 +46,7 @@ if matching.nil?
 	exit 0
 end
 
-matching = matching.merge($config['global'])
+matching = $config['global'].merge(matching)
 
 
 ts=Time.now.to_i 
@@ -61,7 +61,6 @@ errors = []
 successes=[]
 
 
-threshold_passed = false
 delay = ts - sent
 if delay  > threshold
 	warnings << "late delivery(#{delay}s)"
@@ -102,11 +101,13 @@ prefix=""
 
 if (!errors.empty?)
 	prefix="CHECK_MAILING ERROR"
+    code = EXIT_CRIT
 	detail_str += "crit: #{errors.join(',')};"
 end
 
 if (!warnings.empty?)
 	if (prefix.empty?)
+        code = EXIT_WARN
 		prefix="CHECK_MAILING WARNING"
 	end
 	detail_str += "warn: #{warnings.join(',')};"
@@ -117,7 +118,6 @@ if (warnings.empty? && errors.empty?)
 end
 
 detail_str += "ok: #{successes.join(',')}"
-
 
 details ="#{prefix}:#{detail_str} - received mail from #{mail.from.pop}, at: #{mail.date}, subject: #{mail.subject},id: #{mail.message_id}, delayed by #{delay} seconds"
 passive_check_submit_str="[%i] PROCESS_SERVICE_CHECK_RESULT;%s;%s;%i;%s\n" % [ts,$config['submission']['hostname'],matching['svc_name'],code,details]
