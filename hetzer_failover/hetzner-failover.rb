@@ -65,7 +65,8 @@ class HetznerFailoverSwitcher
         end
 
         info "Trying to route  #{@ip} to #{@target}..."
-        result = switch @ip,@taerget
+        result = switch @ip,@target
+        
 
         unless check_result result
             exit 1
@@ -80,16 +81,16 @@ class HetznerFailoverSwitcher
     end
 
 
-    def check_result(hash)
-        if target == false 
+    def check_result(result)
+        if result == false 
             error("Unable to get routing target!")
         end
 
-        unless target.instance_of?(Hash)
+        unless result.instance_of?(Hash)
             error "Result is not a hash! Probably API has changed."
 
             if (@verbose)
-                info "Result was:\n" + target.to_s
+                info "Result was:\n" + result.to_s
             end
             return false
         end
